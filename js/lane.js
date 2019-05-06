@@ -10,6 +10,7 @@ class Lane {
     this.y = 20 + mode * 150;
     this.start = start;
     this.goal = goal;
+    this.connections = [];
 
     switch (mode) {
       case 0: {
@@ -77,22 +78,60 @@ class Lane {
     // goal station
     text(this.goal, this.x - 105, this.y + this.length * size - 7, 100, 20);
 
-    // wait path
-    // stroke(140);
-    // strokeWeight(2)
-    // drawingContext.setLineDash([4, 4]);
-    // line(this.x + 5, this.y + this.length * size + 6, this.x + 5, this.y + this.length * size + 50);
+    this.drawFootpath();
+    this.drawWaitpath();
+  }
 
-    // foot path  
-    stroke(40);
+  drawFootpath() {
+    this.connections.filter(c => c.type === 'footpath').forEach(pa => {
+      stroke(40);
+      strokeCap(SQUARE);
+      strokeWeight(8);
+      drawingContext.setLineDash([3, 3]);
+
+      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
+      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
+    });
+  }
+
+
+  drawWaitpath() {
+    this.connections.filter(c => c.type === 'waitpath').forEach(pa => {
+      strokeCap(SQUARE);
+      stroke(140);
+      strokeWeight(2)
+      drawingContext.setLineDash([4, 4]);
+      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
+      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
+    });
+  }
+
+  drawDragPath(section) {
     strokeCap(SQUARE);
-    strokeWeight(8);
-    drawingContext.setLineDash([3, 3]);
-    line(this.x + 5, this.y + this.length * size + 6, this.x + 5, this.y + this.length * size + 45);
+    stroke(140);
+    strokeWeight(2)
+    drawingContext.setLineDash([4, 4]);
+    line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
+    line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
   }
 
 
   clicked() {
     return Math.sqrt((this.x - mouseX) * (this.x - mouseX) + (this.y - mouseY) * (this.y - mouseY)) < 20;
   }
+
+  sectionClicked() {
+    stroke(255, 0, 0);
+    if (this.intersects(this.x, this.y, 10, this.length * size + 5, mouseX, mouseY)) {
+      return ~~((mouseY - this.y) / size);
+      // circle(this.x + 4.5, this.y + section * size, 5.5, 5.5);
+    }
+    return -1;
+  }
+
+
+  intersects(x1, y1, x2, y2, xi, yi) {
+    return x1 < xi && x1 + x2 > xi && y1 < yi && y1 + y2 > yi;
+  }
+
 }
