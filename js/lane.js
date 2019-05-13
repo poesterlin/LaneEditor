@@ -110,9 +110,8 @@ class Lane {
     stroke(140);
     strokeWeight(2);
     drawingContext.setLineDash([4, 4]);
-    // line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
-    // line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
-    line(this.x + 5, this.y + section * size, mouseX + 5, mouseY);
+    line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
+    line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
   }
 
 

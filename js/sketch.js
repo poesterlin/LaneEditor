@@ -51,9 +51,14 @@ function setup() {
 
 function draw() {
   background(255);
-  lanes.forEach(l => l.draw())
   lanes.forEach(l => l.drawFootpath(connections))
   lanes.forEach(l => l.drawWaitpath(connections))
+  lanes.forEach(l => l.draw())
+
+
+  if (dragConnection.from) {
+    dragConnection.from.drawDragPath(dragConnection.section);
+  }
 }
 
 
@@ -81,7 +86,6 @@ function mouseDragged() {
   });
 
   if (dragConnection.from) {
-    dragConnection.from.drawDragPath(dragConnection.section);
     if (section && section !== dragConnection.from) {
       addConnection(dragConnection.from, {
         from: dragConnection.section,
