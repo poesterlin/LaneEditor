@@ -1,22 +1,47 @@
 const lanes = new Array(3).fill(null).map((_, idx) => new Lane(5, 'U' + (idx + 1), idx, 'start station', 'stop station'));
+const connections = [];
+
 let wasDragged = false;
 let dragConnection = {
   from: undefined,
   section: 0
 }
 
+let inputs = {
+  start: 'start',
+  destination: 'dest',
+  name: 'u1',
+  length: 4,
+  type: 0
+}
+
 
 function setup() {
-  createCanvas(400, 800);
+  createCanvas(400, 400);
+
+  createInput('Start Station').input((event) => inputs.start = event.target.value);
+  createInput('Destination').input((event) => inputs.destination = event.target.value);
+  createInput('Name').input((event) => inputs.name = event.target.value);
+  createInput(0, 'number').input((event) => inputs.length = event.target.value);
+
+  const sel = createSelect();
+  sel.option('green');
+  sel.option('orange');
+  sel.option('red');
+  sel.changed(event => inputs.type = event.target.selectedIndex);
+
+  createButton('create').mousePressed(createLane);
+
   lanes[1].x = 100;
   lanes[2].x = 120;
-  lanes[0].connections.push({
+
+  addConnection(lanes[0], {
     from: 3,
     to: 4,
     of: lanes[1],
     type: 'waitpath'
-  });
-  lanes[0].connections.push({
+  })
+  addConnection(lanes[0], {
     from: 5,
     to: 0,
     of: lanes[2],
@@ -27,6 +52,8 @@ function setup() {
 function draw() {
   background(255);
   lanes.forEach(l => l.draw())
+  lanes.forEach(l => l.drawFootpath(connections))
+  lanes.forEach(l => l.drawWaitpath(connections))
 }
 
 
@@ -37,22 +64,11 @@ function mouseClicked(event) {
     return;
   }
   if (event.ctrlKey) {
-    const lane = lanes.findIndex(l => l.clicked());
-    if (lane) {
-      lanes.splice(lane, 1);
-      return;
+    const idx = lanes.findIndex(l => l.clicked());
+    if (idx > -1) {
+      connections.filter(c => c.of === lanes[idx]).forEach(c => removeConnection(lanes[idx], c))
+      lanes.splice(idx, 1);
     }
-
-    // const section = lanes.find(l => l.sectionClicked());
-    // if (section) {
-    //   const n = section.sectionClicked();
-    //   section.connections.splice(section.connections.findIndex(c => c.from === n || c.to === n), 1);
-    // }
-  } else {
-    const lane = new Lane(~~(Math.random() * 5 + 4), 'U6', ~~(Math.random() * 3), 'start', 'stop');
-    lane.x = mouseX;
-    lane.y = mouseY;
-    lanes.push(lane);
   }
 }
 
@@ -67,7 +83,7 @@ function mouseDragged() {
   if (dragConnection.from) {
     dragConnection.from.drawDragPath(dragConnection.section);
     if (section && section !== dragConnection.from) {
-      dragConnection.from.connections.push({
+      addConnection(dragConnection.from, {
         from: dragConnection.section,
         to: s,
         of: section,
@@ -89,4 +105,19 @@ function mouseDragged() {
     lane.x = mouseX;
     lane.y = mouseY;
   }
+}
+
+function createLane() {
+  lanes.push(new Lane(inputs.length, inputs.name, inputs.type, inputs.start, inputs.destination))
+}
+
+
+function addConnection(lane, connection) {
+  connections.push(connection);
+  lane.connections.add(connection);
+}
+
+function removeConnection(lane, connection) {
+  connections.splice(connections.findIndex(c => c === connection), 1);
+  lane.connections.delete(connection);
 }

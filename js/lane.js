@@ -10,7 +10,7 @@ class Lane {
     this.y = 20 + mode * 150;
     this.start = start;
     this.goal = goal;
-    this.connections = [];
+    this.connections = new WeakSet();
 
     switch (mode) {
       case 0: {
@@ -77,13 +77,11 @@ class Lane {
 
     // goal station
     text(this.goal, this.x - 105, this.y + this.length * size - 7, 100, 20);
-
-    this.drawFootpath();
-    this.drawWaitpath();
   }
 
-  drawFootpath() {
-    this.connections.filter(c => c.type === 'footpath').forEach(pa => {
+  drawFootpath(allLanes) {
+    for (const pa of allLanes) {
+      if (this === pa.of || !this.connections.has(pa) || pa.type !== 'waitpath') continue;
       stroke(40);
       strokeCap(SQUARE);
       strokeWeight(8);
@@ -91,28 +89,30 @@ class Lane {
 
       line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
       line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
-    });
+    }
   }
 
 
-  drawWaitpath() {
-    this.connections.filter(c => c.type === 'waitpath').forEach(pa => {
+  drawWaitpath(allLanes) {
+    for (const pa of allLanes) {
+      if (this === pa.of || !this.connections.has(pa) || pa.type !== 'footpath') continue;
       strokeCap(SQUARE);
       stroke(140);
       strokeWeight(2)
       drawingContext.setLineDash([4, 4]);
       line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
       line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
-    });
+    }
   }
 
   drawDragPath(section) {
     strokeCap(SQUARE);
     stroke(140);
-    strokeWeight(2)
+    strokeWeight(2);
     drawingContext.setLineDash([4, 4]);
-    line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
-    line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
+    // line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
+    // line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
+    line(this.x + 5, this.y + section * size, mouseX + 5, mouseY);
   }
 
 
