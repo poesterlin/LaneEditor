@@ -31,6 +31,7 @@ function setup() {
   sel.changed(event => inputs.type = event.target.selectedIndex);
 
   createButton('create').mousePressed(createLane);
+  createButton('save').mousePressed(()=> saveCanvas('route', 'jpg'));
 
   lanes[1].x = 100;
   lanes[2].x = 120;
