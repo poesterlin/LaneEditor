@@ -1,8 +1,8 @@
-const size = 20;
+const size = 15;
 
 class Lane {
 
-  constructor(length, name, mode, start, goal) {
+  constructor(length, name, mode, start, goal, timeType, time) {
     this.length = length;
     this.name = name;
 
@@ -11,22 +11,24 @@ class Lane {
     this.start = start;
     this.goal = goal;
     this.connections = new WeakSet();
+    this.time = time;
+    this.timeType = timeType;
 
     switch (mode) {
       case 0: {
-        this.color = 'lightgreen';
+        this.color = [35, 233, 35];
         this.thicc = 3;
         break;
       }
 
       case 1: {
-        this.color = 'orange';
+        this.color = [255, 193, 12];
         this.thicc = 6;
         break;
       }
 
       case 2: {
-        this.color = 'red';
+        this.color = [255, 18, 78];
         this.thicc = 7;
         break;
       }
@@ -41,48 +43,68 @@ class Lane {
     strokeWeight(2);
 
     // Main body
-    rect(this.x, this.y, 10, this.length * size + 5);
+    rect(this.x, this.y, 10, this.length * size + 9);
 
     // stations
     for (let i = 1; i <= this.length; i++) {
-      circle(this.x + 4.5, this.y + i * size, 5.5, 5.5);
+      circle(this.x + 4.5, this.y + i * size + 4, 7, 7);
     }
- 
+
     // side indicator
     noStroke();
-    fill(color(this.color));
-    rect(this.x + 9, this.y + 2, this.thicc, this.length * size + 2);
+    fill(color(...this.color));
+    rect(this.x + 9, this.y, this.thicc, this.length * size + 8);
 
     // start station inner
     strokeWeight(4);
     fill(255);
-    circle(this.x + 5, this.y, 18, 18);
+    circle(this.x + 5, this.y, 19, 19);
 
-    // start station outer
+    // start station gray
     fill(120);
     circle(this.x + 5, this.y, 10, 10);
 
+    // start station outer
     noFill();
-    stroke(color(this.color));
+    stroke(color(...this.color));
     strokeWeight(2);
     circle(this.x + 5, this.y, 20, 20);
 
     // line name background
+
     fill(0, 90, 150);
     noStroke();
-    rect(this.x - 27, this.y + 11, 20, 18);
+    if (this.name) {
+      rect(this.x - 27, this.y + 11, 20, 18);
+    }
 
     // line name
+    noStroke();
+    textStyle(BOLD);
+    textAlign(LEFT)
     fill(255);
-    text(this.name, this.x - 26, this.y + 25, 20);
+    textSize(11);
+    text(this.name.trim().toUpperCase(), this.x - 24, this.y + 24);
 
     // start station
+    textSize(9);
     textAlign(RIGHT);
     fill(0);
     text(this.start, this.x - 105, this.y - 5, 100, 20);
 
     // goal station
     text(this.goal, this.x - 105, this.y + this.length * size - 7, 100, 20);
+    textStyle(NORMAL);
+
+    if (this.timeType === 1) {
+      textSize(14);
+      text(this.time, this.x + 22, this.y - 15);
+    }
+
+    if (this.timeType === 2) {
+      textSize(14);
+      text(this.time, this.x + 22, this.y + this.length * size + 20);
+    }
   }
 
   drawFootpath(allLanes) {
@@ -93,8 +115,8 @@ class Lane {
       strokeWeight(8);
       drawingContext.setLineDash([3, 3]);
 
-      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
-      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
+      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + 4 + pa.to * size);
+      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + 4 + pa.to * size, pa.of.x + 5, pa.of.y + 4 + pa.to * size);
     }
   }
 
@@ -106,8 +128,8 @@ class Lane {
       stroke(140);
       strokeWeight(2)
       drawingContext.setLineDash([4, 4]);
-      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size);
-      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + pa.to * size, pa.of.x + 5, pa.of.y + pa.to * size);
+      line(this.x + 5, this.y + pa.from * size + 6, (this.x + 5 + pa.of.x + 5) / 2, pa.of.y + 4 + pa.to * size);
+      line((this.x + 5 + pa.of.x + 5) / 2, pa.of.y + 4 + pa.to * size, pa.of.x + 5, pa.of.y + 4 + pa.to * size);
     }
   }
 
@@ -116,19 +138,19 @@ class Lane {
     stroke(140);
     strokeWeight(2);
     drawingContext.setLineDash([4, 4]);
-    line(this.x + 5, this.y + section * size, (this.x + 5 + mouseX + 5) / 2, mouseY);
-    line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
+    line(this.x + 5, this.y + section * size, (this.x + 5 + mouseX / scalingFactor + 5) / 2, mouseY / scalingFactor);
+    line((this.x + 5 + mouseX / scalingFactor + 5) / 2, mouseY / scalingFactor, mouseX / scalingFactor + 5, mouseY / scalingFactor);
   }
 
 
   clicked() {
-    return Math.sqrt((this.x - mouseX) * (this.x - mouseX) + (this.y - mouseY) * (this.y - mouseY)) < 20;
+    return Math.sqrt((this.x - mouseX / scalingFactor) * (this.x - mouseX / scalingFactor) + (this.y - mouseY / scalingFactor) * (this.y - mouseY / scalingFactor)) < 20;
   }
 
   sectionClicked() {
     stroke(255, 0, 0);
-    if (this.intersects(this.x, this.y, 10, this.length * size + 5, mouseX, mouseY)) {
-      return ~~((mouseY - this.y) / size);
+    if (this.intersects(this.x, this.y - size / 2, 10, this.length * size + 15, mouseX / scalingFactor, mouseY / scalingFactor)) {
+      return ~~((mouseY / scalingFactor - this.y) / size);
       // circle(this.x + 4.5, this.y + section * size, 5.5, 5.5);
     }
     return -1;

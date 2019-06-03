@@ -1,4 +1,5 @@
-const lanes = new Array(3).fill(null).map((_, idx) => new Lane(5, 'U' + (idx + 1), idx, 'start station', 'stop station'));
+const scalingFactor = 1.5;
+const lanes = [];
 const connections = [];
 
 let wasDragged = false;
@@ -8,11 +9,15 @@ let dragConnection = {
 }
 
 let inputs = {
-  start: 'start',
-  destination: 'dest',
+  start: '',
+  destination: '',
   name: 'u1',
   length: 4,
   type: 0,
+  time: {
+    type: 0,
+    value: "",
+  },
   trip: {
     start: 'trip start',
     destination: 'trip stop'
@@ -21,9 +26,14 @@ let inputs = {
 
 
 function setup() {
-  createCanvas(600, 600);
-
+  createCanvas(1000, 1000);
   let temp = undefined;
+
+  temp = createInput('').input((event) => inputs.trip.start = event.target.value);
+  temp.elt.placeholder = 'trip start'
+  temp = createInput('').input((event) => inputs.trip.destination = event.target.value);
+  temp.elt.placeholder = 'trip destination'
+
   temp = createInput('').input((event) => inputs.start = event.target.value);
   temp.elt.placeholder = 'Start Station'
   temp = createInput('').input((event) => inputs.destination = event.target.value);
@@ -32,11 +42,15 @@ function setup() {
   temp.elt.placeholder = 'Name'
   temp = createInput(0, 'number').input((event) => inputs.length = event.target.value);
   temp.elt.placeholder = 'number of stations'
-  
-  temp = createInput('').input((event) => inputs.trip.start = event.target.value);
-  temp.elt.placeholder = 'trip start'
-  temp = createInput('').input((event) => inputs.trip.destination = event.target.value);
-  temp.elt.placeholder = 'trip destination'
+
+  const selTime = createSelect();
+  selTime.option('no time');
+  selTime.option('start time');
+  selTime.option('stop time');
+  selTime.changed(event => inputs.time.type = event.target.selectedIndex);
+
+  temp = createInput('').input((event) => inputs.time.value = event.target.value);
+  temp.elt.placeholder = 'time'
 
   const sel = createSelect();
   sel.option('green');
@@ -51,29 +65,12 @@ function setup() {
   });
   createButton('clear').mousePressed(() => lanes.splice(0, lanes.length));
 
-
-  lanes[0].x = 350;
-  lanes[1].x = 200;
-  lanes[1].y = 250;
-  lanes[2].x = 220;
-  lanes[2].y = 400;
-
-  addConnection(lanes[0], {
-    from: 3,
-    to: 4,
-    of: lanes[1],
-    type: 'waitpath'
-  })
-  addConnection(lanes[0], {
-    from: 5,
-    to: 0,
-    of: lanes[2],
-    type: 'footpath'
-  });
 }
 
 function draw() {
   background(255);
+  smooth();
+  scale(scalingFactor);
   lanes.forEach(l => l.drawFootpath(connections))
   lanes.forEach(l => l.drawWaitpath(connections))
   lanes.forEach(l => l.draw())
@@ -86,7 +83,7 @@ function draw() {
   fill(0);
   stroke(0);
   textSize(22);
-  drawingContext.setLineDash([3, 3]);
+  drawingContext.setLineDash([6, 6]);
   line(22, 50, 22, 550);
   drawingContext.setLineDash([]);
   textAlign(LEFT);
@@ -112,7 +109,7 @@ function mouseClicked(event) {
   }
 }
 
-function mouseDragged() {
+function mouseDragged(event) {
   wasDragged = true;
   let s = 0;
   const section = lanes.find(l => {
@@ -126,7 +123,7 @@ function mouseDragged() {
         from: dragConnection.section,
         to: s,
         of: section,
-        type: ~~(Math.random() * 2) ? 'footpath' : 'waitpath'
+        type: !event.ctrlKey ? 'footpath' : 'waitpath'
       });
       dragConnection = {};
     }
@@ -141,13 +138,13 @@ function mouseDragged() {
 
   const lane = lanes.find(l => l.clicked());
   if (lane) {
-    lane.x = mouseX;
-    lane.y = mouseY;
+    lane.x = mouseX / scalingFactor - 4;
+    lane.y = mouseY / scalingFactor;
   }
 }
 
 function createLane() {
-  lanes.push(new Lane(inputs.length, inputs.name, inputs.type, inputs.start, inputs.destination))
+  lanes.push(new Lane(inputs.length, inputs.name, inputs.type, inputs.start, inputs.destination, inputs.time.type, inputs.time.value))
 }
 
 
