@@ -12,17 +12,31 @@ let inputs = {
   destination: 'dest',
   name: 'u1',
   length: 4,
-  type: 0
+  type: 0,
+  trip: {
+    start: 'trip start',
+    destination: 'trip stop'
+  }
 }
 
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(600, 600);
 
-  createInput('Start Station').input((event) => inputs.start = event.target.value);
-  createInput('Destination').input((event) => inputs.destination = event.target.value);
-  createInput('Name').input((event) => inputs.name = event.target.value);
-  createInput(0, 'number').input((event) => inputs.length = event.target.value);
+  let temp = undefined;
+  temp = createInput('').input((event) => inputs.start = event.target.value);
+  temp.elt.placeholder = 'Start Station'
+  temp = createInput('').input((event) => inputs.destination = event.target.value);
+  temp.elt.placeholder = 'Destination Station'
+  temp = createInput('').input((event) => inputs.name = event.target.value);
+  temp.elt.placeholder = 'Name'
+  temp = createInput(0, 'number').input((event) => inputs.length = event.target.value);
+  temp.elt.placeholder = 'number of stations'
+  
+  temp = createInput('').input((event) => inputs.trip.start = event.target.value);
+  temp.elt.placeholder = 'trip start'
+  temp = createInput('').input((event) => inputs.trip.destination = event.target.value);
+  temp.elt.placeholder = 'trip destination'
 
   const sel = createSelect();
   sel.option('green');
@@ -31,10 +45,18 @@ function setup() {
   sel.changed(event => inputs.type = event.target.selectedIndex);
 
   createButton('create').mousePressed(createLane);
-  createButton('save').mousePressed(()=> saveCanvas('route', 'jpg'));
+  createButton('save').mousePressed(() => saveCanvas('route', 'jpg'));
+  createButton('reconnect').mousePressed(() => {
+    lanes.forEach(lane => lane.connections = new WeakSet());
+  });
+  createButton('clear').mousePressed(() => lanes.splice(0, lanes.length));
 
-  lanes[1].x = 100;
-  lanes[2].x = 120;
+
+  lanes[0].x = 350;
+  lanes[1].x = 200;
+  lanes[1].y = 250;
+  lanes[2].x = 220;
+  lanes[2].y = 400;
 
   addConnection(lanes[0], {
     from: 3,
@@ -60,6 +82,18 @@ function draw() {
   if (dragConnection.from) {
     dragConnection.from.drawDragPath(dragConnection.section);
   }
+
+  fill(0);
+  stroke(0);
+  textSize(22);
+  drawingContext.setLineDash([3, 3]);
+  line(22, 50, 22, 550);
+  drawingContext.setLineDash([]);
+  textAlign(LEFT);
+
+  stroke(255);
+  text(inputs.trip.start, 20, 40);
+  text(inputs.trip.destination, 20, 575);
 }
 
 
