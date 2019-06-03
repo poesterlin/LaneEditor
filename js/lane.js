@@ -7,7 +7,7 @@ class Lane {
     this.name = name;
 
     this.x = 200;
-    this.y = 20 + mode * 150;
+    this.y = 100;
     this.start = start;
     this.goal = goal;
     this.connections = new WeakSet();
@@ -15,19 +15,19 @@ class Lane {
     switch (mode) {
       case 0: {
         this.color = 'lightgreen';
-        this.thicc = 4;
+        this.thicc = 3;
         break;
       }
 
       case 1: {
         this.color = 'orange';
-        this.thicc = 10;
+        this.thicc = 6;
         break;
       }
 
       case 2: {
         this.color = 'red';
-        this.thicc = 15;
+        this.thicc = 7;
         break;
       }
     }
@@ -35,6 +35,7 @@ class Lane {
 
   draw() {
     drawingContext.setLineDash([]);
+    textSize(12);
     fill(120);
     stroke(255);
     strokeWeight(2);
@@ -46,24 +47,29 @@ class Lane {
     for (let i = 1; i <= this.length; i++) {
       circle(this.x + 4.5, this.y + i * size, 5.5, 5.5);
     }
-
-    // start station inner
-    strokeWeight(4);
-    circle(this.x + 5, this.y, 8, 8);
-
-    // start station outer
-    noFill();
-    stroke(color(this.color));
-    strokeWeight(2);
-    circle(this.x + 5, this.y, 10, 10);
-
+ 
     // side indicator
     noStroke();
     fill(color(this.color));
-    rect(this.x + 9, this.y + 5, this.thicc, this.length * size - 1);
+    rect(this.x + 9, this.y + 2, this.thicc, this.length * size + 2);
+
+    // start station inner
+    strokeWeight(4);
+    fill(255);
+    circle(this.x + 5, this.y, 18, 18);
+
+    // start station outer
+    fill(120);
+    circle(this.x + 5, this.y, 10, 10);
+
+    noFill();
+    stroke(color(this.color));
+    strokeWeight(2);
+    circle(this.x + 5, this.y, 20, 20);
 
     // line name background
     fill(0, 90, 150);
+    noStroke();
     rect(this.x - 27, this.y + 11, 20, 18);
 
     // line name
@@ -110,7 +116,7 @@ class Lane {
     stroke(140);
     strokeWeight(2);
     drawingContext.setLineDash([4, 4]);
-    line(this.x + 5, this.y + section * size + 6, (this.x + 5 + mouseX + 5) / 2, mouseY);
+    line(this.x + 5, this.y + section * size, (this.x + 5 + mouseX + 5) / 2, mouseY);
     line((this.x + 5 + mouseX + 5) / 2, mouseY, mouseX + 5, mouseY);
   }
 
