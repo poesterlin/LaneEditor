@@ -80,17 +80,20 @@ function draw() {
     dragConnection.from.drawDragPath(dragConnection.section);
   }
 
+  const tallest = lanes.reduce((l, max) => (l.y + size * l.length) > (max.y + size * max.length) ? l : max, { y: 0, length: 10 });
+  const maxHeight = tallest.y + size * tallest.length + 50;
+
   fill(0);
   stroke(0);
   textSize(22);
   drawingContext.setLineDash([6, 6]);
-  line(22, 50, 22, 550);
+  line(22, 50, 22, maxHeight);
   drawingContext.setLineDash([]);
   textAlign(LEFT);
 
   stroke(255);
   text(inputs.trip.start, 20, 40);
-  text(inputs.trip.destination, 20, 575);
+  text(inputs.trip.destination, 20, maxHeight + 15);
 }
 
 

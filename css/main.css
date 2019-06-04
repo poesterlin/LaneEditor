@@ -4,3 +4,7 @@ select {
   display: block;
   margin: 5px auto;
 }
+
+.p5Canvas{
+  border: 1px solid gray;
+}
