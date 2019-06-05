@@ -90,10 +90,10 @@ class Lane {
     textSize(9);
     textAlign(RIGHT);
     fill(0);
-    text(this.start, this.x - 105, this.y - 5, 100, 20);
+    text(this.start, this.x - 8, this.y + 3);
 
     // goal station
-    text(this.goal, this.x - 105, this.y + this.length * size - 7, 100, 20);
+    text(this.goal, this.x - 8, this.y + this.length * size + 7);
     textStyle(NORMAL);
 
     if (this.timeType === 1) {
