@@ -39,13 +39,14 @@ class Lane {
     drawingContext.setLineDash([]);
     textSize(12);
     fill(120);
-    stroke(255);
-    strokeWeight(2);
 
     // Main body
-    rect(this.x, this.y, 10, this.length * size + 9);
+    noStroke();
+    rect(this.x, this.y, 10, this.length * size + 8);
 
     // stations
+    stroke(255);
+    strokeWeight(2);
     for (let i = 1; i <= this.length; i++) {
       circle(this.x + 4.5, this.y + i * size + 4, 7, 7);
     }
