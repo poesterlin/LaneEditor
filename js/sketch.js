@@ -59,7 +59,7 @@ function setup() {
   sel.changed(event => inputs.type = event.target.selectedIndex);
 
   createButton('create').mousePressed(createLane);
-  createButton('save').mousePressed(() => saveCanvas('route', 'jpg'));
+  createButton('save').mousePressed(() => saveCanvas('route - ' + inputs.trip.start + ' to ' + inputs.trip.destination, 'jpg'));
   createButton('reconnect').mousePressed(() => {
     lanes.forEach(lane => lane.connections = new WeakSet());
   });
