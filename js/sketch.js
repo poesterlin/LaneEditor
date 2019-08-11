@@ -29,41 +29,76 @@ function setup() {
   createCanvas(1000, 1000);
   let temp = undefined;
 
+  const div = document.createElement("div");
+  document.body.appendChild(div);
+
+  let a = document.createElement("a")
+  a.innerHTML = 'Scenario';
+  div.appendChild(a);
+
   temp = createInput('').input((event) => inputs.trip.start = event.target.value);
-  temp.elt.placeholder = 'trip start'
+  temp.elt.placeholder = 'trip start';
+  div.appendChild(temp.elt);
   temp = createInput('').input((event) => inputs.trip.destination = event.target.value);
   temp.elt.placeholder = 'trip destination'
+  div.appendChild(temp.elt);
 
+  a = document.createElement("a")
+  a.innerHTML = 'Element';
+  div.appendChild(a);
   temp = createInput('').input((event) => inputs.start = event.target.value);
   temp.elt.placeholder = 'Start Station'
+  div.appendChild(temp.elt);
   temp = createInput('').input((event) => inputs.destination = event.target.value);
   temp.elt.placeholder = 'Destination Station'
+  div.appendChild(temp.elt);
   temp = createInput('').input((event) => inputs.name = event.target.value);
   temp.elt.placeholder = 'Name'
+  div.appendChild(temp.elt);
   temp = createInput(0, 'number').input((event) => inputs.length = event.target.value);
   temp.elt.placeholder = 'number of stations'
+  div.appendChild(temp.elt);
 
   const selTime = createSelect();
   selTime.option('no time');
   selTime.option('start time');
   selTime.option('stop time');
   selTime.changed(event => inputs.time.type = event.target.selectedIndex);
+  div.appendChild(selTime.elt);
 
   temp = createInput('').input((event) => inputs.time.value = event.target.value);
   temp.elt.placeholder = 'time'
+  div.appendChild(temp.elt);
 
   const sel = createSelect();
   sel.option('green');
   sel.option('orange');
   sel.option('red');
   sel.changed(event => inputs.type = event.target.selectedIndex);
+  div.appendChild(sel.elt);
 
-  createButton('create').mousePressed(createLane);
-  createButton('save').mousePressed(() => saveCanvas('route - ' + inputs.trip.start + ' to ' + inputs.trip.destination, 'jpg'));
-  createButton('reconnect').mousePressed(() => {
+  temp = createButton('create');
+  temp.mousePressed(createLane);
+  div.appendChild(temp.elt);
+
+  a = document.createElement("a")
+  div.appendChild(a);
+
+  temp = createButton('clear');
+  temp.mousePressed(() => lanes.splice(0, lanes.length));
+  div.appendChild(temp.elt);
+
+  
+  temp = createButton('reconnect')
+  temp.mousePressed(() => {
     lanes.forEach(lane => lane.connections = new WeakSet());
   });
-  createButton('clear').mousePressed(() => lanes.splice(0, lanes.length));
+  div.appendChild(temp.elt);
+  
+  temp = createButton('save');
+  temp.mousePressed(() => saveCanvas('route - ' + inputs.trip.start + ' to ' + inputs.trip.destination, 'jpg'));
+  div.appendChild(temp.elt);
+  temp.elt.classList.add('saveBtn');
 
 }
 
